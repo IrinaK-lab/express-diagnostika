@@ -110,7 +110,7 @@ button:disabled{opacity:.55;cursor:default}
 .blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
 .bl{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--card)}
 .bl .sc{font:600 26px/1 var(--body);font-variant-numeric:tabular-nums;margin:6px 0}
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px}
+.pill{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px}
 .pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
 .green{color:var(--ok);background:var(--ok-bg)}.yellow{color:var(--warn);background:var(--warn-bg)}.red{color:var(--bad);background:var(--bad-bg)}.grey{color:var(--grey);background:var(--grey-bg)}
 .rep h2{margin-top:22px}
@@ -126,6 +126,59 @@ button:disabled{opacity:.55;cursor:default}
 .owner th,.owner td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
 .scroll{overflow-x:auto}
 @media (prefers-reduced-motion:no-preference){.step.on{animation:in .25s ease-out}@keyframes in{from{opacity:.0;transform:translateY(6px)}to{opacity:1;transform:none}}}
+
+/* наглядный отчёт */
+.zb{position:relative;height:10px;border-radius:6px;background:linear-gradient(90deg,var(--bad-bg) 0,var(--bad-bg) 50%,var(--warn-bg) 50%,var(--warn-bg) 75%,var(--ok-bg) 75%,var(--ok-bg) 100%);margin:8px 0 4px;border:1px solid var(--line)}
+.zb i{position:absolute;left:0;top:-1px;bottom:-1px;border-radius:6px;min-width:6px}
+.zb i.green{background:var(--ok)}.zb i.yellow{background:var(--warn)}.zb i.red{background:var(--bad)}.zb i.grey{background:var(--grey)}
+.zt{position:relative;height:14px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.zt span{position:absolute;transform:translateX(-50%)}
+.zt span:first-child{transform:none}.zt span:last-child{transform:translateX(-100%)}
+.big{font:600 44px/1 var(--body);font-variant-numeric:tabular-nums}
+.big small{font:400 16px var(--body);color:var(--muted)}
+.lvls{display:flex;gap:6px;margin:14px 0 4px}
+.lvls span{flex:1;text-align:center;font-size:12px;padding:6px 4px;border-radius:8px;background:var(--grey-bg);color:var(--muted)}
+.lvls span.on.low{background:var(--bad);color:var(--cobalt-ink);font-weight:600}
+.lvls span.on.mid{background:var(--warn);color:var(--cobalt-ink);font-weight:600}
+.lvls span.on.high{background:var(--ok);color:var(--cobalt-ink);font-weight:600}
+.viz{display:grid;gap:14px;margin:0 0 14px}
+
+.viz .card{margin:0}
+.radar{width:100%;max-width:560px;height:auto;display:block;margin:0 auto}
+.radar .ring{fill:none;stroke:var(--line);stroke-width:1}
+.radar .ring.k{stroke:var(--muted);stroke-dasharray:3 3;opacity:.6}
+.radar .ax{stroke:var(--line);stroke-width:1}
+.radar .shape{fill:var(--cobalt);fill-opacity:.18;stroke:var(--cobalt);stroke-width:2;stroke-linejoin:round}
+.radar .pt.green{fill:var(--ok)}.radar .pt.yellow{fill:var(--warn)}.radar .pt.red{fill:var(--bad)}.radar .pt.grey{fill:var(--card);stroke:var(--grey);stroke-width:2}
+.radar text{font:500 13px var(--body);fill:var(--ink)}
+.radar text.v{font-weight:700}
+.radar text.v.green{fill:var(--ok)}.radar text.v.yellow{fill:var(--warn)}.radar text.v.red{fill:var(--bad)}.radar text.v.grey{fill:var(--grey)}
+.radar text.sc{font-size:10px;fill:var(--muted)}
+.brow{padding:10px 0;border-top:1px solid var(--line)}
+.brow:first-child{padding-top:0;border-top:0}
+.brow .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.brow .nm{font-weight:600;font-size:15px}
+.brow .vl{font:600 18px var(--body);font-variant-numeric:tabular-nums;margin-left:auto;padding-right:6px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);margin-top:10px}
+.legend b{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.gap{border-left:5px solid var(--warn);display:flex;gap:12px;align-items:flex-start}
+.gap .ic{flex:none;width:28px;height:28px;border-radius:50%;background:var(--warn-bg);color:var(--warn);font-weight:700;display:flex;align-items:center;justify-content:center}
+.gap p{margin:0}
+.act{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--grey);border-radius:12px;padding:14px 16px;margin:0 0 12px}
+.act.l-green{border-left-color:var(--ok)}.act.l-yellow{border-left-color:var(--warn)}.act.l-red{border-left-color:var(--bad)}
+.act .hd{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.act .no2{flex:none;width:26px;height:26px;border-radius:50%;background:var(--cobalt);color:var(--cobalt-ink);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.act .hd h3{margin:0;font-size:16px}
+.act .hd .pill{margin-left:auto}
+.act .row{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:6px 0}
+.act .row+.row{border-top:1px dashed var(--line)}
+.act .tag{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;padding-top:2px}
+.act .row p{margin:0}
+@media(max-width:480px){.act .row{grid-template-columns:1fr;gap:2px}}
+.nextbox{background:var(--lav);border-radius:14px;padding:18px 20px;margin:0 0 12px}
+.nextbox .lab{color:var(--ink);opacity:.7}
+.nextbox .dir{font:italic 400 26px/1.2 var(--display);margin:4px 0 10px}
+.nextbox p{margin:0 0 6px}
 </style>
 </head>
 <body>
@@ -379,28 +432,73 @@ function finish(){
   render(d,res);
 }
 function sec(root,title){var h=el("h2",null,title);root.appendChild(h)}
+
+function fmt(x){return x===null||x===undefined?"–":(Math.round(x*10)/10).toFixed(1).replace(".",",")}
+function ev(b){return b.light==="grey"?null:b.mean}
+function zoneBar(v,light){
+  var w=(v===null)?0:Math.max(0,Math.min(100,(v-1)/4*100));
+  var z=el("div","zb");var i=el("i",light);i.style.width=w+"%";z.appendChild(i);
+  var t=el("div","zt");[[1,0],[3,50],[4,75],[5,100]].forEach(function(a){var sp=el("span",null,String(a[0]));sp.style.left=a[1]+"%";t.appendChild(sp)});
+  var f=document.createElement("div");f.appendChild(z);f.appendChild(t);return f;
+}
+function radar(blocks){
+  var cx=220,cy=175,R=112,n=blocks.length,o="";
+  function pt(i,r){var a=(i*360/n-90)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)]}
+  [1,2,3,4,5].forEach(function(v){
+    var pts=[];for(var i=0;i<n;i++){var q=pt(i,R*v/5);pts.push(q[0].toFixed(1)+","+q[1].toFixed(1))}
+    o+='<polygon class="ring'+((v===3||v===4)?' k':'')+'" points="'+pts.join(" ")+'"/>';
+  });
+  for(var i=0;i<n;i++){var e=pt(i,R);o+='<line class="ax" x1="'+cx+'" y1="'+cy+'" x2="'+e[0].toFixed(1)+'" y2="'+e[1].toFixed(1)+'"/>'}
+  var sp=[];
+  blocks.forEach(function(b,i){var r=ev(b)===null?0:R*ev(b)/5;var q=pt(i,r);sp.push(q[0].toFixed(1)+","+q[1].toFixed(1))});
+  o+='<polygon class="shape" points="'+sp.join(" ")+'"/>';
+  blocks.forEach(function(b,i){
+    var r=ev(b)===null?0:R*ev(b)/5;var q=pt(i,r);
+    o+='<circle class="pt '+b.light+'" cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="5"/>';
+    var L=pt(i,R+14),a=(i*360/n-90)*Math.PI/180,sx=Math.cos(a),sy=Math.sin(a);
+    var anchor=Math.abs(sx)<.3?"middle":(sx>0?"start":"end");
+    var lines=b.name.split(" ");var cnt=lines.length+1;
+    var y0=sy<-.6?L[1]-(cnt-1)*14:(sy>.6?L[1]+10:L[1]-(cnt-1)*7+4);
+    var t='<text text-anchor="'+anchor+'" x="'+L[0].toFixed(1)+'" y="'+y0.toFixed(1)+'">';
+    lines.forEach(function(ln,k){t+='<tspan x="'+L[0].toFixed(1)+'" dy="'+(k?14:0)+'">'+ln+'</tspan>'});
+    t+='<tspan class="v '+b.light+'" x="'+L[0].toFixed(1)+'" dy="14" font-weight="700">'+(ev(b)===null?"нет данных":fmt(b.mean))+'</tspan></text>';
+    o+=t;
+  });
+  [3,4].forEach(function(v){var q=pt(0,R*v/5);o+='<text class="sc" x="'+(cx+4)+'" y="'+(q[1]-2).toFixed(1)+'">'+v+'</text>'});
+  return '<svg class="radar" viewBox="10 5 420 360" role="img" aria-label="Оценки по шести блокам">'+o+'</svg>';
+}
 function render(d,res){
   var R=document.getElementById("result");R.style.display="block";R.textContent="";
   R.appendChild(el("div","test","Тестовый отчёт. Баллы и пороги пока гипотезы, а часть фраз черновая: мы проверяем их на ваших прохождениях."));
   var rep=el("div","rep");
   var L=LEVEL[res.level];
   var head=el("div","head "+res.level);head.appendChild(el("div","lab","Главный вывод"));head.appendChild(el("div","lvl",L[0]));head.appendChild(el("p",null,L[1]));
+  if(res.mean!==null){
+    var bg=el("div","big");bg.appendChild(document.createTextNode(fmt(res.mean)+" "));bg.appendChild(el("small",null,"средняя оценка из 5"));head.appendChild(bg);
+    var ml=res.mean>=4?"green":(res.mean>=3?"yellow":"red");head.appendChild(zoneBar(res.mean,ml));
+  }
+  var lv=el("div","lvls");[["low","низкий"],["mid","средний"],["high","высокий"]].forEach(function(x){lv.appendChild(el("span",(res.level===x[0]?"on ":"")+x[0],x[1]))});
+  head.appendChild(lv);
   if(res.weak.length){
     var two=res.weak.slice(0,2).map(function(b){return b.name}).join(" и ");
-    var p=el("p");p.appendChild(el("b",null,res.weak.length>1?"Самые слабые блоки: ":"Самый слабый блок: "));p.appendChild(document.createTextNode(two+"."));head.appendChild(p);
+    var p=el("p");p.style.marginTop="10px";p.appendChild(el("b",null,res.weak.length>1?"Самые слабые блоки: ":"Самый слабый блок: "));p.appendChild(document.createTextNode(two+"."));head.appendChild(p);
   }
   rep.appendChild(head);
-  var g=el("div","blocks");
+  var viz=el("div","viz");
+  var c1=el("div","card");c1.innerHTML=radar(res.blocks);
+  c1.appendChild(el("p","small","Чем дальше точка от центра, тем выше оценка. Пунктир: границы 3 и 4."));
+  var c2=el("div","card");
   res.blocks.forEach(function(b){
-    var c=el("div","bl");c.appendChild(el("h3",null,b.name));
-    c.appendChild(el("div","sc",b.mean===null?"–":String(b.mean).replace(".",",")));
-    c.appendChild(el("span","pill "+b.light,LIGHT[b.light]));
-    if(b.light==="grey"&&b.unk>=2) c.appendChild(el("p","small","Вы не знаете, как у вас с этим блоком: «не знаю» дважды и больше."));
-    g.appendChild(c);
+    var r=el("div","brow");var tp=el("div","top");tp.appendChild(el("span","nm",b.name));tp.appendChild(el("span","vl",ev(b)===null?"–":fmt(b.mean)));tp.appendChild(el("span","pill "+b.light,LIGHT[b.light]));r.appendChild(tp);
+    r.appendChild(zoneBar(ev(b),b.light));
+    if(b.light==="grey"&&b.unk>=2) r.appendChild(el("p","small","«Не знаю» дважды и больше: для вас этот блок не виден."));
+    c2.appendChild(r);
   });
-  rep.appendChild(g);
+  var lg=el("div","legend");lg.innerHTML='<span><b style="background:var(--bad)"></b>ниже 3: слабое место</span><span><b style="background:var(--warn)"></b>3–3,9: есть риски</span><span><b style="background:var(--ok)"></b>от 4: устойчиво</span>';
+  c2.appendChild(lg);
+  viz.appendChild(c1);viz.appendChild(c2);rep.appendChild(viz);
   sec(rep,"Где ответы расходятся");
-  if(res.rules.length){ res.rules.forEach(function(t){rep.appendChild(el("div","card",t))}) }
+  if(res.rules.length){ res.rules.forEach(function(t){var c=el("div","card gap");c.appendChild(el("div","ic","≠"));c.appendChild(el("p",null,t));rep.appendChild(c)}) }
   else rep.appendChild(el("p","lead","Явных расхождений между оценками и числами не нашли."));
   sec(rep,"Ваши слова");
   var any=false;
@@ -408,14 +506,22 @@ function render(d,res){
   if(!any) rep.appendChild(el("p","lead","Открытые вопросы остались пустыми."));
   sec(rep,"Что проверить за 30 дней");
   var acts=res.weak.filter(function(b){return b.light!=="green"}).slice(0,3);
-  if(acts.length){ acts.forEach(function(b){var c=el("div","act");c.appendChild(el("h3",null,b.name));var p1=el("p");p1.appendChild(el("b",null,"Что видно: "));p1.appendChild(document.createTextNode(PH[b.name].see));c.appendChild(p1);var p2=el("p");p2.appendChild(el("b",null,"Что проверить: "));p2.appendChild(document.createTextNode(PH[b.name].act));c.appendChild(p2);rep.appendChild(c)}) }
+  if(acts.length){ acts.forEach(function(b,k){
+    var c=el("div","act l-"+b.light);var hd=el("div","hd");hd.appendChild(el("span","no2",String(k+1)));hd.appendChild(el("h3",null,b.name));hd.appendChild(el("span","pill "+b.light,fmt(b.mean)+" · "+LIGHT[b.light]));c.appendChild(hd);
+    var r1=el("div","row");r1.appendChild(el("div","tag","Что видно"));r1.appendChild(el("p",null,PH[b.name].see));c.appendChild(r1);
+    var r2=el("div","row");r2.appendChild(el("div","tag","Что проверить"));r2.appendChild(el("p",null,PH[b.name].act));c.appendChild(r2);
+    rep.appendChild(c)}) }
   else rep.appendChild(el("p","lead","Слабых мест по вашим ответам нет. Проверьте, так ли видит команда."));
   var greys=res.blocks.filter(function(b){return b.light==="grey"});
   greys.forEach(function(b){rep.appendChild(el("p","small","«"+b.name+"»: мало данных. Первое действие: выяснить, как у вас с этим блоком, прежде чем что-то менять."))});
   sec(rep,"Куда смотреть дальше");
   var dir=direction(res);
-  rep.appendChild(el("p",null,dir?(dir.indexOf("под такие")===0?"Для таких блоков "+dir+".":"Направление, которое стоит посмотреть: "+dir+"."):"По вашим оценкам явных направлений нет."));
-  rep.appendChild(el("p",null,"Следующий шаг: срез с командой, чтобы проверить, как это видит команда."));
+  var nb=el("div","nextbox");nb.appendChild(el("div","lab","Направление"));
+  if(dir&&dir.indexOf("под такие")===0){nb.appendChild(el("div","dir","Стратегическая сессия"));nb.appendChild(el("p",null,"Для таких блоков флагманской программы пока нет, подойдёт стратегическая сессия."))}
+  else if(dir){nb.appendChild(el("div","dir",dir));nb.appendChild(el("p",null,"Направление, которое стоит посмотреть по вашим слабым блокам."))}
+  else nb.appendChild(el("p",null,"По вашим оценкам явных направлений нет."));
+  var nx=el("p");nx.appendChild(el("b",null,"Следующий шаг: "));nx.appendChild(document.createTextNode("срез с командой, чтобы проверить, как это видит команда."));nb.appendChild(nx);
+  rep.appendChild(nb);
   rep.appendChild(el("p","small","Это первый срез по взгляду одного человека, не диагноз. В блоках с высокой оценкой стоит проверить, так ли видит команда."));
   R.appendChild(rep);
   R.appendChild(validation());
