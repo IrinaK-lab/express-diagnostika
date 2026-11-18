@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Экспресс диагностика</title>
+<style>
+@font-face{font-family:"Newsreader";font-style:italic;font-weight:400;font-display:swap;src:url(fonts/newsreader-latin-400-italic.woff2) format("woff2")}
+@font-face{font-family:"Work Sans";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/work-sans-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Work Sans";font-style:normal;font-weight:500;font-display:swap;src:url(fonts/work-sans-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Work Sans";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/work-sans-latin-600-normal.woff2) format("woff2")}
+/* Свет: кобальт как опора, лаванда как акцент, светлая основа. Одна колонка 720px, шаги по очереди. */
+:root{
+  --paper:oklch(98.5% .004 265);
+  --card:oklch(100% 0 0);
+  --ink:oklch(24% .03 265);
+  --muted:oklch(48% .03 265);
+  --line:oklch(90% .012 265);
+  --cobalt:oklch(46% .2 263);
+  --cobalt-ink:oklch(100% 0 0);
+  --lav:oklch(93% .045 295);
+  --ok:oklch(52% .13 155);
+  --ok-bg:oklch(95% .04 155);
+  --warn:oklch(56% .13 75);
+  --warn-bg:oklch(95% .06 85);
+  --bad:oklch(52% .19 25);
+  --bad-bg:oklch(95% .04 25);
+  --grey:oklch(52% .01 265);
+  --grey-bg:oklch(94% .006 265);
+  --test-bg:oklch(95% .06 85);
+  --display:"Newsreader",Georgia,serif;
+  --body:"Work Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:oklch(20% .025 265);--card:oklch(25% .03 265);--ink:oklch(94% .01 265);--muted:oklch(72% .03 265);
+    --line:oklch(34% .03 265);--cobalt:oklch(72% .15 263);--cobalt-ink:oklch(20% .03 265);--lav:oklch(32% .05 295);
+    --ok:oklch(76% .14 155);--ok-bg:oklch(30% .05 155);--warn:oklch(80% .13 85);--warn-bg:oklch(32% .06 85);
+    --bad:oklch(74% .16 25);--bad-bg:oklch(31% .06 25);--grey:oklch(75% .01 265);--grey-bg:oklch(30% .01 265);--test-bg:oklch(32% .06 85);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:oklch(20% .025 265);--card:oklch(25% .03 265);--ink:oklch(94% .01 265);--muted:oklch(72% .03 265);
+  --line:oklch(34% .03 265);--cobalt:oklch(72% .15 263);--cobalt-ink:oklch(20% .03 265);--lav:oklch(32% .05 295);
+  --ok:oklch(76% .14 155);--ok-bg:oklch(30% .05 155);--warn:oklch(80% .13 85);--warn-bg:oklch(32% .06 85);
+  --bad:oklch(74% .16 25);--bad-bg:oklch(31% .06 25);--grey:oklch(75% .01 265);--grey-bg:oklch(30% .01 265);--test-bg:oklch(32% .06 85);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--body)}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 72px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.14em;font-size:13px;color:var(--cobalt);text-transform:uppercase}
+.brand i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--cobalt);box-shadow:12px 0 0 var(--lav),0 12px 0 var(--lav),12px 12px 0 var(--cobalt);margin-right:14px;margin-bottom:12px}
+h1{font:italic 400 clamp(30px,6vw,42px)/1.1 var(--display);margin:18px 0 8px;text-wrap:balance}
+h2{font:italic 400 26px/1.2 var(--display);margin:0 0 6px;text-wrap:balance}
+h3{font:600 15px/1.3 var(--body);margin:0 0 4px}
+p{margin:0 0 10px}
+.lead{color:var(--muted);max-width:60ch}
+.test{background:var(--test-bg);border-left:4px solid var(--warn);padding:10px 14px;border-radius:6px;margin:16px 0;font-size:14px}
+.steps{display:flex;gap:6px;margin:22px 0 18px;padding:0;list-style:none}
+.steps li{flex:1;font-size:12px;color:var(--muted);border-top:3px solid var(--line);padding-top:6px}
+.steps li.on{border-color:var(--cobalt);color:var(--ink);font-weight:600}
+.steps li.done{border-color:var(--cobalt)}
+@media(max-width:520px){.steps li span{display:none}.steps li{height:10px}}
+section.step{display:none}
+section.step.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:0 0 14px}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{padding:0;font-weight:500;margin-bottom:10px}
+.q{margin:0 0 18px}
+.q:last-child{margin-bottom:0}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.chip span{display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:15px;min-height:40px}
+.chip input:checked+span{background:var(--cobalt);border-color:var(--cobalt);color:var(--cobalt-ink)}
+.chip input:focus-visible+span{outline:3px solid var(--lav);outline-offset:2px}
+.scale{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.scale .chip span{min-width:44px;text-align:center;padding:8px 0}
+.scale .chip.dk span{padding:8px 14px;min-width:0;color:var(--muted)}
+.scale .chip.dk input:checked+span{color:var(--cobalt-ink)}
+.ends{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);max-width:290px;margin-top:4px}
+.st{display:grid;grid-template-columns:30px 1fr;gap:4px 8px;padding:14px 0;border-top:1px solid var(--line)}
+.st:first-of-type{border-top:0;padding-top:0}
+.st .no{color:var(--muted);font-variant-numeric:tabular-nums;font-size:14px;padding-top:2px}
+.st .body{min-width:0}
+.st.bad{background:var(--bad-bg);border-radius:8px;margin:0 -8px;padding-left:8px;padding-right:8px}
+input[type=number],input[type=email],textarea{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+input[type=number]{max-width:160px}
+textarea{min-height:92px;resize:vertical}
+input:focus-visible,textarea:focus-visible{outline:3px solid var(--lav);outline-offset:1px;border-color:var(--cobalt)}
+.numrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.check{display:flex;gap:10px;align-items:flex-start;margin:0 0 10px;font-size:15px}
+.check input{margin-top:4px;width:18px;height:18px;flex:none}
+.hint{font-size:13px;color:var(--muted)}
+.err{color:var(--bad);font-size:14px;margin:8px 0 0;min-height:0}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+button{font:600 15px var(--body);border-radius:10px;padding:12px 20px;cursor:pointer;min-height:44px}
+.pri{background:var(--cobalt);color:var(--cobalt-ink);border:1px solid var(--cobalt)}
+.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:focus-visible{outline:3px solid var(--lav);outline-offset:2px}
+button:disabled{opacity:.55;cursor:default}
+/* отчёт */
+.head{border-radius:14px;padding:22px;margin:0 0 14px;border:1px solid var(--line);background:var(--card)}
+.head .lvl{font:italic 400 34px/1.1 var(--display);margin:4px 0 8px}
+.lab{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.head.high{border-left:6px solid var(--ok)}.head.mid{border-left:6px solid var(--warn)}.head.low{border-left:6px solid var(--bad)}.head.none{border-left:6px solid var(--grey)}
+.blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.bl{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--card)}
+.bl .sc{font:600 26px/1 var(--body);font-variant-numeric:tabular-nums;margin:6px 0}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.green{color:var(--ok);background:var(--ok-bg)}.yellow{color:var(--warn);background:var(--warn-bg)}.red{color:var(--bad);background:var(--bad-bg)}.grey{color:var(--grey);background:var(--grey-bg)}
+.rep h2{margin-top:22px}
+.quote{border-left:3px solid var(--lav);padding:2px 0 2px 12px;margin:0 0 10px;white-space:pre-wrap}
+.act{padding:12px 0;border-top:1px solid var(--line)}
+.act:first-of-type{border-top:0}
+.small{font-size:13px;color:var(--muted)}
+.val{border:2px dashed var(--cobalt);border-radius:14px;padding:18px;margin-top:28px;background:var(--lav)}
+.val .card{background:var(--card)}
+.ok-msg{color:var(--ok);font-weight:600}
+.owner{margin-top:30px;border-top:1px solid var(--line);padding-top:14px}
+.owner table{width:100%;border-collapse:collapse;font-size:13px}
+.owner th,.owner td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.scroll{overflow-x:auto}
+@media (prefers-reduced-motion:no-preference){.step.on{animation:in .25s ease-out}@keyframes in{from{opacity:.0;transform:translateY(6px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><i></i>Clever Lab</div>
+
+  <div id="intro">
+    <h1>Экспресс диагностика</h1>
+    <p class="lead">27 вопросов, которые покажут текущий срез эффективности управления компанией. На прохождение уйдёт 15–20 минут. Отчёт откроется сразу после ответов.</p>
+    <div class="test"><b>Тестовая версия для коллег.</b> Проходите про свою компанию или про любую знакомую. Ответы никуда не отправляются и не сохраняются: всё считается в вашем браузере. После отчёта будет короткая анкета: что в форме непонятно и что стоит поменять.</div>
+  </div>
+
+  <ol class="steps" id="steps" aria-label="Шаги">
+    <li class="on"><span>Вход</span></li><li><span>О компании</span></li><li><span>Утверждения</span></li><li><span>Цифры и слова</span></li>
+  </ol>
+
+  <form id="form" novalidate>
+    <!-- 0 Вход -->
+    <section class="step on" data-step="0">
+      <div class="card">
+        <fieldset>
+          <legend>Вы собственник или CEO компании?</legend>
+          <div class="opts">
+            <label class="chip"><input type="radio" name="role" value="да"><span>Да</span></label>
+            <label class="chip"><input type="radio" name="role" value="нет"><span>Нет</span></label>
+          </div>
+        </fieldset>
+        <div id="roleNo" class="test" style="display:none">Этот срез рассчитан на человека, который принимает решения в компании. В боевой версии здесь будет предложение передать ссылку собственнику или CEO. Для теста можно идти дальше.</div>
+        <div class="err" id="err0" role="alert"></div>
+      </div>
+    </section>
+
+    <!-- 1 О компании -->
+    <section class="step" data-step="1">
+      <h2>О компании</h2>
+      <div class="card" id="company"></div>
+      <div class="err" id="err1" role="alert"></div>
+    </section>
+
+    <!-- 2 Утверждения -->
+    <section class="step" data-step="2">
+      <h2>19 утверждений</h2>
+      <p class="lead">Отметьте, как часто это так за последние 3 месяца: от 1 (почти никогда) до 5 (почти всегда). Если не знаете, выберите «не знаю»: это тоже ответ.</p>
+      <div class="card" id="stmts"></div>
+      <div class="err" id="err2" role="alert"></div>
+    </section>
+
+    <!-- 3 Цифры и слова -->
+    <section class="step" data-step="3">
+      <h2>Три числа и два вопроса</h2>
+      <div class="card" id="nums"></div>
+      <div class="card" id="opens"></div>
+      <div class="err" id="err3" role="alert"></div>
+    </section>
+
+    <div class="nav" id="nav">
+      <button type="button" class="sec" id="back">Назад</button>
+      <button type="button" class="pri" id="next">Дальше</button>
+    </div>
+  </form>
+
+  <div id="result" style="display:none"></div>
+</div>
+
+<script>
+"use strict";
+/* ---------- данные формы (формулировки из документа «экспресс и платный срез») ---------- */
+var BLOCKS=["Цели","Структура","Отношения","Лидерство","Помогающие механизмы","Адаптивность"];
+var STM=[
+ [0,"Руководители могут своими словами назвать 2–3 главные цели компании на этот год."],
+ [0,"Когда меняются условия, мы пересматриваем цели и объясняем это команде."],
+ [0,"Люди понимают, как их работа связана с главными целями."],
+ [1,"У каждого руководителя понятно, за что он отвечает, а за что нет."],
+ [1,"Спорные вопросы между подразделениями решаются без меня."],
+ [1,"Если уходит ключевой человек, работа не останавливается."],
+ [2,"Руководители говорят друг другу неприятное прямо, а не за спиной."],
+ [2,"Подразделения делятся информацией, не дожидаясь просьбы."],
+ [2,"Конфликты доводятся до решения, а не затихают сами."],
+ [3,"Руководители принимают решения в своей зоне без согласования со мной."],
+ [3,"Руководители спрашивают с подчинённых за результат без моего напоминания."],
+ [3,"У каждого ключевого руководителя есть человек, который может его заменить."],
+ [4,"План достижения целей разбит на шаги со сроками и ответственными."],
+ [4,"Я вижу ключевые цифры по компании без запроса, а не по итогам месяца."],
+ [4,"Вознаграждение зависит от результата, а не от стажа или близости ко мне."],
+ [4,"Люди понимают, за что получают премии и повышения."],
+ [5,"После серьёзного сбоя мы разбираем, что произошло, и меняем порядок работы."],
+ [5,"Решение по новой ситуации (цены, поставщики, рынок) принимается за дни, а не за месяцы."],
+ [5,"Информация о рынке и клиентах приходит от руководителей регулярно и влияет на решения."]
+];
+var COMPANY=[
+ {id:"size",q:"Сколько человек работает в компании?",o:["до 50","51–100","101–250","251–500","больше 500"]},
+ {id:"worry",q:"Что беспокоит больше всего (одно)?",o:["деньги и маржа","люди и текучесть","рост и масштаб","всё держится на мне","неопределённость вокруг","другое"]},
+ {id:"change",q:"Хотите ли менять что-то в управлении в ближайшие 3 месяца?",o:["да, уже начали","да, но не знаю с чего","нет","не знаю"]}
+];
+var NUMS=[
+ {id:"hours",q:"Сколько часов в неделю вы лично тратите на оперативные вопросы, которые могли бы решать руководители?",u:"часов в неделю"},
+ {id:"people",q:"Сколько человек, чей уход на 2 недели остановит часть работы?",u:"человек"},
+ {id:"days",q:"Сколько дней обычно проходит от важного события (потеря клиента, рост цены у поставщика) до принятого решения?",u:"дней"}
+];
+var OPENS=[
+ {id:"o1",q:"Вспомните последнее застрявшее решение: что это было, сколько ждали, кто в итоге решил?"},
+ {id:"o2",q:"Что конкретно держится только на одном человеке и почему это до сих пор так?"}
+];
+/* Черновые фразы отчёта: «что видно» и «что проверить за 30 дней». Лидерство – из документа, остальные черновики для проверки. */
+var PH={
+ "Цели":{see:"цели есть, но не все понимают, как работа связана с ними, или цели меняются без объяснений.",act:"Попросите трёх руководителей по отдельности записать 2–3 главные цели компании на год и сравните записи."},
+ "Структура":{see:"зоны ответственности размыты, а часть работы держится на отдельных людях.",act:"Выпишите, без кого встанет работа, и для каждого назовите, кто заменит его на 2 недели."},
+ "Отношения":{see:"неприятное обсуждают не напрямую, а информация идёт по просьбе, а не сама.",act:"На ближайшем совещании попросите каждого руководителя назвать один вопрос, который он обычно обсуждает только в кулуарах."},
+ "Лидерство":{see:"решения в зоне руководителей часто уходят к вам.",act:"Запишите все вопросы, с которыми к вам пришли за неделю, и отметьте, какие из них мог решить руководитель."},
+ "Помогающие механизмы":{see:"планы, цифры или вознаграждение плохо помогают управлять.",act:"Выберите одну цель на квартал и запишите шаги со сроками и ответственными на одной странице. Спросите двух людей, понятно ли им, за что дают премию."},
+ "Адаптивность":{see:"компания реагирует на перемены медленнее, чем нужно.",act:"Возьмите последнее важное событие (потеря клиента, рост цен), найдите даты «узнали» и «решили» и отметьте, где потерян срок."}
+};
+var RULES=[
+ {id:"R1",t:"Вы пишете, что руководители решают без вас, но на оперативные вопросы уходит {N} ч в неделю. Стоит проверить, какие вопросы возвращаются к вам."},
+ {id:"R2",t:"Вы оценили, что работа не останавливается без ключевого человека, но назвали {N} чел., без которых часть работы встанет. Стоит сверить, кто это."},
+ {id:"R3",t:"Вы оценили скорость решений как высокую, но на решение уходит {N} дн. Стоит посмотреть, где решение теряет время."}
+];
+
+/* ---------- подсчёт (пороги – гипотезы, подбираем на первых 10–20 прохождениях) ---------- */
+function r1(x){return Math.round(x*10)/10}
+function compute(a,nums){
+  var bl=BLOCKS.map(function(name,bi){
+    var vals=[],unk=0;
+    STM.forEach(function(s,i){ if(s[0]===bi){ var v=a[i]; if(v===0) unk++; else vals.push(v);} });
+    var mean=vals.length?r1(vals.reduce(function(x,y){return x+y},0)/vals.length):null;
+    var light="grey";
+    if(unk<2&&mean!==null){ light=mean>=4?"green":(mean>=3?"yellow":"red"); }
+    return {name:name,mean:mean,unk:unk,light:light};
+  });
+  var data=bl.filter(function(b){return b.light!=="grey"});
+  var reds=data.filter(function(b){return b.light==="red"}).length;
+  var all=data.length?r1(data.reduce(function(x,b){return x+b.mean},0)/data.length):null;
+  var yellows=data.filter(function(b){return b.light==="yellow"}).length;
+  var level="none";
+  if(data.length>=3){ level=(all>=3.5&&reds===0&&yellows<=2)?"high":((all<2.5||reds>=2)?"low":"mid"); }
+  var weak=data.slice().sort(function(x,y){return x.mean-y.mean});
+  var rules=[];
+  var h=nums.hours,p=nums.people,d=nums.days;
+  if(a[9]>=4&&h!=null&&h>10) rules.push(RULES[0].t.replace("{N}",h));
+  if(a[5]>=4&&p!=null&&p>=3) rules.push(RULES[1].t.replace("{N}",p));
+  if(a[17]>=4&&d!=null&&d>14) rules.push(RULES[2].t.replace("{N}",d));
+  return {blocks:bl,mean:all,reds:reds,level:level,weak:weak,rules:rules.slice(0,2)};
+}
+function direction(res){
+  var w=res.weak.filter(function(b){return b.light!=="green"});
+  if(!w.length) return null;
+  var first=w[0].name,second=w[1]?w[1].name:"";
+  if(first==="Отношения"||(first==="Лидерство"&&second==="Отношения")) return "Командная эффективность и сеть коммуникаций";
+  if(first==="Структура"||first==="Лидерство"||first==="Помогающие механизмы") return "Управленческое ядро";
+  return "под такие блоки флагманской программы пока нет, подойдёт стратегическая сессия";
+}
+var LEVEL={
+ high:["Запас прочности высокий","По вашей оценке, управление выдержит рост и перемены. Проверьте, так ли это видит команда."],
+ mid:["Запас прочности средний","По вашей оценке, часть управления держится, а часть стоит укрепить, пока рост и перемены не проверили её."],
+ low:["Запас прочности низкий","По вашей оценке, при росте и переменах управление может не выдержать нагрузку без вашего участия."],
+ none:["Мало данных","Слишком много ответов «не знаю», чтобы назвать запас прочности. Это само по себе вывод: часть управления для вас не видна."]
+};
+var LIGHT={green:"Устойчиво",yellow:"Есть риски",red:"Слабое место",grey:"Мало данных"};
+
+/* ---------- сборка формы ---------- */
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+var company=document.getElementById("company"),stm=document.getElementById("stmts"),nums=document.getElementById("nums"),opens=document.getElementById("opens");
+function chip(name,val,text,cls){var l=el("label","chip"+(cls?" "+cls:""));var i=document.createElement("input");i.type="radio";i.name=name;i.value=val;var s=el("span",null,text);l.appendChild(i);l.appendChild(s);return l}
+COMPANY.forEach(function(c){
+  var q=el("fieldset","q");q.appendChild(el("legend",null,c.q));var o=el("div","opts");
+  c.o.forEach(function(t){o.appendChild(chip(c.id,t,t))});q.appendChild(o);company.appendChild(q);
+});
+STM.forEach(function(s,i){
+  var row=el("fieldset","st");row.id="st"+i;
+  row.appendChild(el("div","no",String(i+1)));
+  var b=el("div","body");b.appendChild(el("legend",null,s[1]));
+  var sc=el("div","scale");
+  for(var k=1;k<=5;k++) sc.appendChild(chip("s"+i,String(k),String(k)));
+  sc.appendChild(chip("s"+i,"0","не знаю","dk"));
+  b.appendChild(sc);
+  var e=el("div","ends");e.appendChild(el("span",null,"почти никогда"));e.appendChild(el("span",null,"почти всегда"));b.appendChild(e);
+  row.appendChild(b);stm.appendChild(row);
+});
+NUMS.forEach(function(n){
+  var q=el("div","q");var lb=el("label",null,n.q);lb.htmlFor="n_"+n.id;lb.style.fontWeight="500";lb.style.display="block";lb.style.marginBottom="8px";q.appendChild(lb);
+  var r=el("div","numrow");var inp=document.createElement("input");inp.type="number";inp.min="0";inp.id="n_"+n.id;inp.inputMode="numeric";r.appendChild(inp);r.appendChild(el("span","hint",n.u));
+  var cl=el("label","check");cl.style.margin="0";var cb=document.createElement("input");cb.type="checkbox";cb.id="u_"+n.id;cl.appendChild(cb);cl.appendChild(el("span",null,"не знаю"));r.appendChild(cl);
+  q.appendChild(r);nums.appendChild(q);
+  cb.addEventListener("change",function(){inp.disabled=cb.checked;if(cb.checked)inp.value=""});
+});
+OPENS.forEach(function(o){
+  var q=el("div","q");var lb=el("label",null,o.q);lb.htmlFor=o.id;lb.style.fontWeight="500";lb.style.display="block";lb.style.marginBottom="8px";q.appendChild(lb);
+  var t=document.createElement("textarea");t.id=o.id;t.maxLength=1500;q.appendChild(t);
+  q.appendChild(el("p","hint","Необязательно. Можно коротко, без имён."));opens.appendChild(q);
+});
+
+/* ---------- шаги ---------- */
+var step=0,startedAt=null;
+var stepsEl=document.getElementById("steps").children,secs=document.querySelectorAll("section.step");
+function show(n){
+  step=n;
+  secs.forEach(function(s,i){s.classList.toggle("on",i===n)});
+  Array.prototype.forEach.call(stepsEl,function(li,i){li.className=i===n?"on":(i<n?"done":"")});
+  document.getElementById("back").style.visibility=n===0?"hidden":"visible";
+  document.getElementById("next").textContent=n===3?"Получить отчёт":"Дальше";
+  document.getElementById("intro").style.display=n===0?"block":"none";
+  window.scrollTo(0,0);
+}
+function val(name){var c=document.querySelector('input[name="'+name+'"]:checked');return c?c.value:null}
+function setErr(n,t){document.getElementById("err"+n).textContent=t||""}
+document.getElementById("form").addEventListener("change",function(e){
+  if(!startedAt) startedAt=Date.now();
+  if(e.target.name==="role") document.getElementById("roleNo").style.display=e.target.value==="нет"?"block":"none";
+  if(/^s\d+$/.test(e.target.name||"")){var r=document.getElementById("st"+e.target.name.slice(1));if(r) r.classList.remove("bad")}
+});
+function validate(n){
+  setErr(n,"");
+  if(n===0){ if(!val("role")){setErr(0,"Выберите ответ.");return false} }
+  if(n===1){ for(var i=0;i<COMPANY.length;i++){ if(!val(COMPANY[i].id)){setErr(1,"Ответьте на все три вопроса.");return false} } }
+  if(n===2){
+    var miss=[];
+    for(var j=0;j<STM.length;j++){ var ok=val("s"+j)!==null; document.getElementById("st"+j).classList.toggle("bad",!ok); if(!ok) miss.push(j+1) }
+    if(miss.length){setErr(2,"Не отмечены утверждения: "+miss.join(", ")+".");var f=document.getElementById("st"+(miss[0]-1));f.scrollIntoView({block:"center"});return false}
+  }
+  if(n===3){
+    for(var k=0;k<NUMS.length;k++){
+      var v=document.getElementById("n_"+NUMS[k].id).value,u=document.getElementById("u_"+NUMS[k].id).checked;
+      if(!u&&(v===""||isNaN(+v)||+v<0)){setErr(3,"Введите число или отметьте «не знаю» в каждом из трёх вопросов.");return false}
+    }
+  }
+  return true;
+}
+document.getElementById("next").addEventListener("click",function(){
+  if(!startedAt) startedAt=Date.now();
+  if(!validate(step)) return;
+  if(step<3) show(step+1); else finish();
+});
+document.getElementById("back").addEventListener("click",function(){ if(step>0) show(step-1) });
+show(0);
+
+/* ---------- отчёт ---------- */
+var run=null;
+function collect(){
+  var a=STM.map(function(_,i){return +val("s"+i)});
+  var n={};NUMS.forEach(function(x){var u=document.getElementById("u_"+x.id).checked,v=document.getElementById("n_"+x.id).value;n[x.id]=(u||v==="")?null:+v});
+  var co={};COMPANY.forEach(function(c){co[c.id]=val(c.id)});
+  return {role:val("role"),company:co,a:a,nums:n,o1:document.getElementById("o1").value.trim(),o2:document.getElementById("o2").value.trim()};
+}
+function finish(){
+  var d=collect(),res=compute(d.a,d.nums);
+  var minutes=startedAt?Math.round((Date.now()-startedAt)/6000)/10:null;
+  run={answers:d,scores:res.blocks.map(function(b){return {b:b.name,m:b.mean,u:b.unk,l:b.light}}),level:res.level,minutes:minutes,at:new Date().toISOString(),fb:null};
+  document.getElementById("form").style.display="none";
+  document.getElementById("steps").style.display="none";
+  document.getElementById("intro").style.display="none";
+  render(d,res);
+}
+function sec(root,title){var h=el("h2",null,title);root.appendChild(h)}
+function render(d,res){
+  var R=document.getElementById("result");R.style.display="block";R.textContent="";
+  R.appendChild(el("div","test","Тестовый отчёт. Баллы и пороги пока гипотезы, а часть фраз черновая: мы проверяем их на ваших прохождениях."));
+  var rep=el("div","rep");
+  var L=LEVEL[res.level];
+  var head=el("div","head "+res.level);head.appendChild(el("div","lab","Главный вывод"));head.appendChild(el("div","lvl",L[0]));head.appendChild(el("p",null,L[1]));
+  if(res.weak.length){
+    var two=res.weak.slice(0,2).map(function(b){return b.name}).join(" и ");
+    var p=el("p");p.appendChild(el("b",null,res.weak.length>1?"Самые слабые блоки: ":"Самый слабый блок: "));p.appendChild(document.createTextNode(two+"."));head.appendChild(p);
+  }
+  rep.appendChild(head);
+  var g=el("div","blocks");
+  res.blocks.forEach(function(b){
+    var c=el("div","bl");c.appendChild(el("h3",null,b.name));
+    c.appendChild(el("div","sc",b.mean===null?"–":String(b.mean).replace(".",",")));
+    c.appendChild(el("span","pill "+b.light,LIGHT[b.light]));
+    if(b.light==="grey"&&b.unk>=2) c.appendChild(el("p","small","Вы не знаете, как у вас с этим блоком: «не знаю» дважды и больше."));
+    g.appendChild(c);
+  });
+  rep.appendChild(g);
+  sec(rep,"Где ответы расходятся");
+  if(res.rules.length){ res.rules.forEach(function(t){rep.appendChild(el("div","card",t))}) }
+  else rep.appendChild(el("p","lead","Явных расхождений между оценками и числами не нашли."));
+  sec(rep,"Ваши слова");
+  var any=false;
+  [[OPENS[0].q,d.o1],[OPENS[1].q,d.o2]].forEach(function(x){ if(x[1]){any=true;rep.appendChild(el("p","small",x[0]));rep.appendChild(el("div","quote",x[1]))} });
+  if(!any) rep.appendChild(el("p","lead","Открытые вопросы остались пустыми."));
+  sec(rep,"Что проверить за 30 дней");
+  var acts=res.weak.filter(function(b){return b.light!=="green"}).slice(0,3);
+  if(acts.length){ acts.forEach(function(b){var c=el("div","act");c.appendChild(el("h3",null,b.name));var p1=el("p");p1.appendChild(el("b",null,"Что видно: "));p1.appendChild(document.createTextNode(PH[b.name].see));c.appendChild(p1);var p2=el("p");p2.appendChild(el("b",null,"Что проверить: "));p2.appendChild(document.createTextNode(PH[b.name].act));c.appendChild(p2);rep.appendChild(c)}) }
+  else rep.appendChild(el("p","lead","Слабых мест по вашим ответам нет. Проверьте, так ли видит команда."));
+  var greys=res.blocks.filter(function(b){return b.light==="grey"});
+  greys.forEach(function(b){rep.appendChild(el("p","small","«"+b.name+"»: мало данных. Первое действие: выяснить, как у вас с этим блоком, прежде чем что-то менять."))});
+  sec(rep,"Куда смотреть дальше");
+  var dir=direction(res);
+  rep.appendChild(el("p",null,dir?(dir.indexOf("под такие")===0?"Для таких блоков "+dir+".":"Направление, которое стоит посмотреть: "+dir+"."):"По вашим оценкам явных направлений нет."));
+  rep.appendChild(el("p",null,"Следующий шаг: срез с командой, чтобы проверить, как это видит команда."));
+  rep.appendChild(el("p","small","Это первый срез по взгляду одного человека, не диагноз. В блоках с высокой оценкой стоит проверить, так ли видит команда."));
+  R.appendChild(rep);
+  R.appendChild(validation());
+}
+function validation(){
+  var v=el("div","val");
+  v.appendChild(el("h2",null,"Помогите проверить форму"));
+  v.appendChild(el("p",null,"Это не часть отчёта. Ответы нигде не сохраняются: в конце нажмите кнопку и отправьте скопированный текст Ирине."));
+  var card=el("div","card");
+  var q1=el("fieldset","q");q1.appendChild(el("legend",null,"Узнали ли вы компанию в отчёте? (1 – совсем нет, 5 – полностью)"));
+  var o=el("div","opts");for(var i=1;i<=5;i++)o.appendChild(chip("fb_rec",String(i),String(i)));q1.appendChild(o);card.appendChild(q1);
+  var q2=el("fieldset","q");q2.appendChild(el("legend",null,"Оставили бы вы почту ради такого отчёта?"));
+  var o2=el("div","opts");["да","нет","зависит"].forEach(function(t){o2.appendChild(chip("fb_mail",t,t))});q2.appendChild(o2);card.appendChild(q2);
+  [["fb_unclear","Что в вопросах было неясно, двусмысленно или длинно? Номера или слова."],["fb_report","Что в отчёте неверно, лишнее или вызывает сомнение?"],["fb_missing","О чём не спросили, а надо было?"]].forEach(function(x){
+    var q=el("fieldset","q");q.appendChild(el("legend",null,x[1]));var t=document.createElement("textarea");t.id=x[0];t.maxLength=1500;q.appendChild(t);card.appendChild(q);
+  });
+  var cp=el("button","pri","Скопировать ответы и отзыв");cp.type="button";cp.id="fbCopy";card.appendChild(cp);
+  card.appendChild(el("p","small","Время прохождения: "+(run.minutes!=null?String(run.minutes).replace(".",",")+" мин.":"неизвестно")));
+  var m=el("div",null,"");m.id="fbMsg";m.setAttribute("role","status");card.appendChild(m);
+  var ta=document.createElement("textarea");ta.id="fbText";ta.readOnly=true;ta.style.display="none";ta.style.marginTop="10px";card.appendChild(ta);
+  v.appendChild(card);
+  cp.addEventListener("click",function(){
+    var fb={rec:val("fb_rec"),mail:val("fb_mail"),unclear:document.getElementById("fb_unclear").value.trim(),report:document.getElementById("fb_report").value.trim(),missing:document.getElementById("fb_missing").value.trim()};
+    var txt=JSON.stringify(Object.assign({},run,{fb:fb}),null,1);
+    function manual(){ta.value=txt;ta.style.display="block";ta.focus();ta.select();m.textContent="Автоматически скопировать не удалось. Текст выделен ниже: скопируйте его вручную и отправьте Ирине.";m.className="err"}
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){m.textContent="Скопировано. Вставьте в сообщение Ирине.";m.className="ok-msg"},manual)}
+      else manual();
+    }catch(e){manual()}
+  });
+  return v;
+}
+</script>
+</body>
+</html>
